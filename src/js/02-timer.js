@@ -1,5 +1,7 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import Notiflix from 'notiflix';
+import 'notiflix/dist/notiflix-3.2.5.min.css';
 
 const flatpickrBox = document.querySelector('input#datetime-picker');
 const btnStart = document.querySelector('button[data-start]');
@@ -12,7 +14,7 @@ btnStart.setAttribute('disabled', true);
 let finishDate = new Date();
 let startDate = new Date();
 
-flatpickr(flatpickrBox, {
+let calendar = flatpickr(flatpickrBox, {
   dateFormat: 'd-m-Y H:i',
   enableTime: true,
   time_24hr: true,
@@ -20,11 +22,10 @@ flatpickr(flatpickrBox, {
   minuteIncrement: 1,
   onClose(selectedDates) {
     btnStart.removeAttribute('disabled');
-    //   Проверка даты !!!!
     if (startDate < selectedDates[0]) {
       finishDate = selectedDates[0];
     } else {
-      window.alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future');
     }
   },
 });
@@ -34,32 +35,41 @@ btnStart.addEventListener(
   () => (timerId = setInterval(startCountTime, 1000))
 );
 
+function convertMs(ms) {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
+  if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
+    Notiflix.Notify.success('Your time is OVER !!!!');
+    timerId = clearInterval(timerId);
+  }
+
+  return { days, hours, minutes, seconds };
+}
+
 function startCountTime() {
+  calendar.close();
   btnStart.setAttribute('disabled', true);
   startDate = new Date();
 
-  const diffInMs = Math.abs(finishDate - startDate);
-  const oneDay = 1000 * 60 * 60 * 24;
-  const oneHour = oneDay / 24;
-  const oneMinute = oneHour / 60;
-  const oneSecond = oneMinute / 60;
+  let setTimeOfEnd = convertMs(finishDate - startDate);
 
-  const diffDays = Math.trunc(diffInMs / oneDay);
+  days.textContent = addLeadingZero(setTimeOfEnd.days);
+  hours.textContent = addLeadingZero(setTimeOfEnd.hours);
+  minutes.textContent = addLeadingZero(setTimeOfEnd.minutes);
+  seconds.textContent = addLeadingZero(setTimeOfEnd.seconds);
+}
 
-  const diffHours = Math.trunc((diffInMs - diffDays * oneDay) / oneHour);
-
-  const diffMinuts = Math.trunc(
-    (diffInMs - (diffDays * oneDay + diffHours * oneHour)) / oneMinute
-  );
-
-  const diffSeconds = Math.trunc(
-    (diffInMs -
-      (diffDays * oneDay + diffHours * oneHour + diffMinuts * oneMinute)) /
-      oneSecond
-  );
-
-  days.textContent = diffDays;
-  hours.textContent = diffHours;
-  minutes.textContent = diffMinuts;
-  seconds.textContent = diffSeconds;
+function addLeadingZero(val) {
+  let value = String(val);
+  if (val > 99) {
+    return value.padStart(3, '0');
+  }
+  return value.padStart(2, '0');
 }
