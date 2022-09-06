@@ -13,6 +13,7 @@ const seconds = document.querySelector('span[data-seconds]');
 btnStart.setAttribute('disabled', true);
 let finishDate = new Date();
 let startDate = new Date();
+let timerId = null;
 
 let calendar = flatpickr(flatpickrBox, {
   dateFormat: 'd-m-Y H:i',
@@ -22,8 +23,6 @@ let calendar = flatpickr(flatpickrBox, {
   minuteIncrement: 1,
   onClose(selectedDates) {
     let startDate = new Date();
-    console.log('START --> ', startDate);
-    console.log('FINISH --> ', selectedDates[0]);
     if (startDate < selectedDates[0]) {
       btnStart.removeAttribute('disabled');
       finishDate = selectedDates[0];
@@ -36,6 +35,7 @@ let calendar = flatpickr(flatpickrBox, {
 btnStart.addEventListener('click', () => {
   calendar.close();
   btnStart.setAttribute('disabled', true);
+  startCountTime;
   timerId = setInterval(startCountTime, 1000);
 });
 
@@ -51,7 +51,7 @@ function convertMs(ms) {
 
   if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
     Notiflix.Notify.success('Your time is OVER !!!!');
-    timerId = clearInterval(timerId);
+    clearInterval(timerId);
   }
 
   return { days, hours, minutes, seconds };
