@@ -35,7 +35,6 @@ let calendar = flatpickr(flatpickrBox, {
 btnStart.addEventListener('click', () => {
   calendar.close();
   btnStart.setAttribute('disabled', true);
-  startCountTime;
   timerId = setInterval(startCountTime, 1000);
 });
 
