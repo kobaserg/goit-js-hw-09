@@ -26,6 +26,8 @@ let calendar = flatpickr(flatpickrBox, {
     if (startDate < selectedDates[0]) {
       btnStart.removeAttribute('disabled');
       finishDate = selectedDates[0];
+      console.log('START -->', startDate);
+      console.log('FINISH --> ', finishDate);
     } else {
       Notiflix.Notify.failure('Please choose a date in the future');
     }
