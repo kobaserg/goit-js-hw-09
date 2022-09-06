@@ -12,7 +12,7 @@ const seconds = document.querySelector('span[data-seconds]');
 
 btnStart.setAttribute('disabled', true);
 let finishDate = new Date();
-let startDate = new Date();
+// let startDate = new Date();
 
 let calendar = flatpickr(flatpickrBox, {
   dateFormat: 'd-m-Y H:i',
@@ -21,6 +21,9 @@ let calendar = flatpickr(flatpickrBox, {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
+    let startDate = new Date();
+    console.log('START --> ', startDate);
+    console.log('FINISH --> ', selectedDates[0]);
     if (startDate < selectedDates[0]) {
       btnStart.removeAttribute('disabled');
       finishDate = selectedDates[0];
