@@ -33,7 +33,7 @@ let calendar = flatpickr(flatpickrBox, {
 });
 
 btnStart.addEventListener('click', () => {
-  calendar.close();
+  flatpickrBox.setAttribute('disabled', true);
   btnStart.setAttribute('disabled', true);
   timerId = setInterval(startCountTime, 1000);
 });
@@ -48,18 +48,18 @@ function convertMs(ms) {
   const minutes = Math.floor(((ms % day) % hour) / minute);
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
-  if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-    Notiflix.Notify.success('Your time is OVER !!!!');
-    clearInterval(timerId);
-  }
-
   return { days, hours, minutes, seconds };
 }
 
 function startCountTime() {
   startDate = new Date();
+  let timeOfEnd = finishDate - startDate;
+  if (timeOfEnd < 1000) {
+    Notiflix.Notify.success('Your time is OVER !!!!');
+    clearInterval(timerId);
+  }
 
-  let setTimeOfEnd = convertMs(finishDate - startDate);
+  let setTimeOfEnd = convertMs(timeOfEnd);
 
   days.textContent = addLeadingZero(setTimeOfEnd.days);
   hours.textContent = addLeadingZero(setTimeOfEnd.hours);
@@ -68,9 +68,5 @@ function startCountTime() {
 }
 
 function addLeadingZero(val) {
-  let value = String(val);
-  if (val > 99) {
-    return value.padStart(3, '0');
-  }
-  return value.padStart(2, '0');
+  return String(val).padStart(2, '0');
 }
